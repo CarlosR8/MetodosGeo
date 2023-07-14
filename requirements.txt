@@ -1,4 +1,4 @@
-googlemaps==3.0.2
 numpy==1.15.4
-
 geocoder~=1.38.1
+paho-mqtt~=1.6.1
+geopy~=2.3.0
