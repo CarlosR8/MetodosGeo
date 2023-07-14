@@ -1,4 +1,4 @@
-numpy==1.15.4
+numpy==1.25.1
 geocoder~=1.38.1
 paho-mqtt~=1.6.1
 geopy~=2.3.0
