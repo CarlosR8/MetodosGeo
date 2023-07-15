@@ -4,7 +4,7 @@ import random, json, time
 import geocoder
 import time
 
-#Hive
+#   Hive
 BROKER = 'broker.hivemq.com'
 PORT = 1883
 TOPIC_DATA = "metodos_ubicacion"
@@ -26,25 +26,18 @@ def on_connect(client, userdata, flags, rc):
         print("Failed to connect, return code {rc}".format(rc=rc), )
 
 
-def on_message(client, userdata, msg):
-    #   print("Received `{payload}` from `{topic}` topic".format(payload=msg.payload.decode(), topic=msg.topic))
-    try:
-        print("Received `{payload}` from `{topic}` topic".format(payload=msg.payload.decode(), topic=msg.topic))
-        publish(client,TOPIC_ALERT,"Hola")
-
-    except Exception as e:
-        print(e)
-
-
 def connect_mqtt():
     client = mqtt_client.Client(CLIENT_ID)
-    #client.username_pw_set(USERNAME, PASSWORD)
+    #   client.username_pw_set(USERNAME, PASSWORD)
     client.on_connect = on_connect
-    client.on_message = on_message
+    #   client.on_message = on_message
     client.connect(BROKER, PORT)
     return client
 
+
 client = connect_mqtt()
+
+
 # Obtener las coordenadas actuales
 g = geocoder.ip('me')
 
@@ -62,9 +55,6 @@ destination = geodesic(meters=distance_m).destination(original_point, 180)
 latitude_b = destination.latitude
 longitude_b = destination.longitude
 
-'''Coordenadas de los puntos A y B
-point_a = (latitude_a, longitude_a)  # Coordenadas del punto A
-point_b = (latitude_b, longitude_b)  # Coordenadas del punto B'''
 
 #   Definir ruta de incremento de 1 metro
 increment = 1
@@ -84,11 +74,13 @@ lon_increment = (longitude_b - longitude_a) * increment / total_distance
 current_latitude = latitude_a
 current_longitude = longitude_a
 
-def publish(client,TOPIC,msg):
+
+def publish(client, TOPIC, msg):
     msg = json.dumps(msg)
     result = client.publish(TOPIC, msg)
 
 
+aux = 1
 for i in range(int(total_distance/increment)):
     current_latitude += lat_increment
     current_longitude += lon_increment
@@ -98,8 +90,12 @@ for i in range(int(total_distance/increment)):
 
     # Verificar si se excede la distancia permitida
     if distance_to_route > alert_distance:
-        print("Se excedio a ruta")
-        #publish(client,TOPIC, msg)
-
+        alerta = ("Se excedio la ruta " + ":" + str(aux))
+        msg = alerta
+        TOPIC = "metodos_ubicacion"
+        #   print("Se excedio la ruta")
+        publish(client,TOPIC, msg)
+        aux += 1
     print(f"Coordenadas actuales: {current_latitude}, {current_longitude}")
     time.sleep(2)
+
